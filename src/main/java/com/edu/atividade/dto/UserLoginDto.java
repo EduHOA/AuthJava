@@ -1,9 +1,7 @@
 package com.edu.atividade.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 
-@Data
 public class UserLoginDto {
     
     @NotBlank(message = "Username is required")
@@ -11,4 +9,11 @@ public class UserLoginDto {
 
     @NotBlank(message = "Password is required")
     private String password;
+
+    public UserLoginDto() {}
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 } 

@@ -4,7 +4,7 @@ Este é um sistema de autenticação e autorização desenvolvido com Spring Boo
 
 ## Requisitos
 
-- JDK 17 ou superior
+- JDK 21 (LTS) ou superior
 - MySQL 8.0 ou superior
 - Maven 3.6 ou superior
 

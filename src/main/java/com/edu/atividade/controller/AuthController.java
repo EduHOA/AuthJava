@@ -5,16 +5,18 @@ import com.edu.atividade.dto.UserLoginDto;
 import com.edu.atividade.dto.UserRegistrationDto;
 import com.edu.atividade.service.AuthService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<JwtResponseDto> register(@Valid @RequestBody UserRegistrationDto registrationDto) {
