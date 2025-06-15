@@ -1,151 +1,161 @@
-# Sistema de Autenticação e Autorização com JWT
+# Atividade - API de Autenticação e Gerenciamento de Usuários
 
-Este é um sistema de autenticação e autorização desenvolvido com Spring Boot, utilizando JWT (JSON Web Token) para autenticação e Spring Security para controle de acesso baseado em roles.
+## Descrição
 
-## Requisitos
+API RESTful desenvolvida em **Spring Boot** para cadastro, autenticação (JWT) e gerenciamento de usuários, com controle de acesso por papéis (roles: USER e ADMIN).
+Permite registro, login, edição de perfil, listagem e exclusão de usuários, além de proteger endpoints sensíveis via Spring Security.
 
-- JDK 21 (LTS) ou superior
-- MySQL 8.0 ou superior
-- Maven 3.6 ou superior
+---
 
-## Configuração do Ambiente
+## Funcionalidades
 
-1. Clone o repositório:
-```bash
-git clone <repository-url>
-cd atividade
-```
+- **Cadastro de Usuários:**
+  - Registro de novos usuários (nome, e-mail, senha).
+  - Definição de papel (role) no cadastro (USER ou ADMIN).
 
-2. Configure o banco de dados MySQL:
-- Crie um banco de dados chamado `user_auth_db` (ou use o nome que preferir)
-- Atualize as credenciais do banco de dados no arquivo `src/main/resources/application.properties`
+- **Autenticação JWT:**
+  - Login com geração de token JWT.
+  - Proteção de endpoints via token JWT.
 
-3. Compile e execute o projeto:
-```bash
-mvn clean install
-mvn spring-boot:run
-```
+- **Controle de Acesso por Role:**
+  - Endpoints exclusivos para ADMIN e USER.
+  - ADMIN pode listar, editar e deletar qualquer usuário.
+  - USER pode visualizar e editar seu próprio perfil.
 
-O servidor estará rodando em `http://localhost:8080`
+- **Gerenciamento de Usuários:**
+  - Visualizar e editar perfil.
+  - Listar todos os usuários (ADMIN).
+  - Buscar, editar e deletar usuário por ID (ADMIN).
 
-## Endpoints da API
+---
+
+## Tecnologias Utilizadas
+
+- Java 17+ (ou 21)
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- H2 Database (padrão, para desenvolvimento)
+- JWT (JSON Web Token)
+- Maven
+
+---
+
+## Como Executar
+
+1. **Clone o repositório:**
+   ```sh
+   git clone <url-do-repositorio>
+   cd atividade
+   ```
+
+2. **Execute a aplicação:**
+   ```sh
+   ./mvnw spring-boot:run
+   ```
+   Ou, no Windows:
+   ```sh
+   mvnw.cmd spring-boot:run
+   ```
+
+3. **Acesse o H2 Console (opcional):**
+   - URL: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+   - JDBC URL: `jdbc:h2:mem:user_auth_db`
+   - Usuário: `sa`
+   - Senha: (em branco)
+
+---
+
+## Endpoints
 
 ### Autenticação
 
-1. Registrar novo usuário:
-```bash
-POST /api/auth/register
-Content-Type: application/json
+- **Registrar Usuário**
+  - `POST /api/auth/register`
+  - Body:
+    ```json
+    {
+      "username": "usuario",
+      "email": "usuario@email.com",
+      "password": "senha123"
+    }
+    ```
 
-{
-    "username": "user1",
-    "email": "user1@example.com",
-    "password": "password123"
-}
-```
+- **Registrar Admin**
+  - `POST /api/auth/register/admin`
+  - Body igual ao registro de usuário.
 
-2. Registrar novo admin:
-```bash
-POST /api/auth/register/admin
-Content-Type: application/json
+- **Login**
+  - `POST /api/auth/login`
+  - Body:
+    ```json
+    {
+      "username": "usuario",
+      "password": "senha123"
+    }
+    ```
+  - Resposta:
+    ```json
+    {
+      "token": "jwt_token",
+      "username": "usuario",
+      "role": "ROLE_USER"
+    }
+    ```
 
-{
-    "username": "admin1",
-    "email": "admin1@example.com",
-    "password": "password123"
-}
-```
+### Usuários
 
-3. Login:
-```bash
-POST /api/auth/login
-Content-Type: application/json
+> **Todos os endpoints abaixo exigem o header:**  
+> `Authorization: Bearer <token>`
 
-{
-    "username": "user1",
-    "password": "password123"
-}
-```
+- **Ver perfil:**  
+  - `GET /api/users/profile`
 
-### Gerenciamento de Usuários
+- **Editar perfil:**  
+  - `PUT /api/users/profile`
+  - Body igual ao registro.
 
-1. Visualizar perfil (requer autenticação):
-```bash
-GET /api/users/profile
-Authorization: Bearer <jwt-token>
-```
+- **Listar todos os usuários (ADMIN):**  
+  - `GET /api/users`
 
-2. Atualizar perfil (requer autenticação):
-```bash
-PUT /api/users/profile
-Authorization: Bearer <jwt-token>
-Content-Type: application/json
+- **Buscar usuário por ID (ADMIN ou o próprio usuário):**  
+  - `GET /api/users/{id}`
 
-{
-    "username": "newusername",
-    "email": "newemail@example.com",
-    "password": "newpassword"
-}
-```
+- **Editar usuário por ID (ADMIN):**  
+  - `PUT /api/users/{id}`
 
-3. Listar todos os usuários (requer role ADMIN):
-```bash
-GET /api/users
-Authorization: Bearer <jwt-token>
-```
+- **Deletar usuário por ID (ADMIN):**  
+  - `DELETE /api/users/{id}`
 
-4. Visualizar usuário específico (requer role ADMIN ou ser o próprio usuário):
-```bash
-GET /api/users/{id}
-Authorization: Bearer <jwt-token>
-```
+---
 
-5. Atualizar usuário (requer role ADMIN):
-```bash
-PUT /api/users/{id}
-Authorization: Bearer <jwt-token>
-Content-Type: application/json
+## Configurações Importantes
 
-{
-    "username": "newusername",
-    "email": "newemail@example.com",
-    "password": "newpassword"
-}
-```
+- **Porta do servidor:** `8080`
+- **Banco de dados:** H2 em memória (padrão para desenvolvimento)
+- **JWT:**
+  - Secret e tempo de expiração configurados em `application.properties`
+- **Console H2:**
+  - Ativado em `/h2-console`
 
-6. Deletar usuário (requer role ADMIN):
-```bash
-DELETE /api/users/{id}
-Authorization: Bearer <jwt-token>
-```
+---
 
-## Estrutura do Projeto
+## Testando com Postman
 
-```
-src/main/java/com/edu/atividade/
-├── config/           # Configurações (Security, JWT)
-├── controller/       # Controladores REST
-├── dto/             # Objetos de transferência de dados
-├── model/           # Entidades JPA
-├── repository/      # Repositórios JPA
-└── service/         # Lógica de negócio
-```
+1. **Registre um usuário ou admin.**
+2. **Faça login para obter o token JWT.**
+3. **Inclua o token no header Authorization para acessar endpoints protegidos.**
 
-## Segurança
+---
 
-- Autenticação baseada em JWT
-- Senhas criptografadas com BCrypt
-- Controle de acesso baseado em roles (ROLE_USER e ROLE_ADMIN)
-- Validação de entrada de dados
-- Proteção contra CSRF
-- Headers de segurança configurados
+## Observações
 
-## Desenvolvimento
+- Para uso em produção, configure um banco de dados real (MySQL/PostgreSQL) e altere as propriedades em `application.properties`.
+- O acesso ao console H2 é apenas para desenvolvimento.
+- O projeto não utiliza Lombok.
 
-O projeto foi desenvolvido seguindo as melhores práticas:
-- Arquitetura em camadas (Controller, Service, Repository)
-- Princípios SOLID
-- Tratamento de exceções
-- Validação de dados
-- Documentação clara
-- Código limpo e organizado 
+---
+
+## Licença
+
+Este projeto é livre para fins acadêmicos e de estudo. 
